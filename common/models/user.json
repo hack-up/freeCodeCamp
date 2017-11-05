@@ -19,6 +19,9 @@
     "emailVerifyTTL": {
       "type": "date"
     },
+    "emailAuthLinkTTL": {
+      "type": "date"
+    },
     "password": {
       "type": "string"
     },
@@ -120,6 +123,11 @@
       "description": "Campers profile does not show challenges/certificates to the public",
       "default": false
     },
+    "isAvailableForHire": {
+      "type": "boolean",
+      "description": "Camper is available for hire",
+      "default": false
+    },
     "currentChallengeId": {
       "type": "string",
       "description": "The challenge last visited by the user",
@@ -174,6 +182,7 @@
         {
           "completedDate": "number",
           "lastUpdated": "number",
+          "numOfAttempts": "number",
           "id": "string",
           "name": "string",
           "completedWith": "string",
@@ -283,6 +292,13 @@
       "principalId": "$owner",
       "permission": "ALLOW",
       "property": "updateLanguage"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "requestAuthLink"
     }
   ],
   "methods": {}

@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import moment from 'moment';
 import loopback from 'loopback';
 import path from 'path';
 import dedent from 'dedent';
 import { Observable } from 'rx';
 import debug from 'debug';
+import { isEmail } from 'validator';
 
 import {
   ifNoUser401,
@@ -33,13 +33,6 @@ const renderCertifedEmail = loopback.template(path.join(
   'emails',
   'certified.ejs'
 ));
-const renderNotifyEmail = loopback.template(path.join(
-  __dirname,
-  '..',
-  'views',
-  'emails',
-  'a-new-user.ejs'
-));
 const sendMessageToNonUser = ifNoUserSend(
   'must be logged in to complete.'
 );
@@ -61,12 +54,6 @@ function getIdsForCert$(id, Challenge) {
     }
   )
     .shareReplay();
-}
-
-// getFormatedDate(challengeMap: Object, challengeId: String) => String, throws
-function getFormatedDate(challengeMap, challengeId) {
-  return moment(challengeMap[challengeId].completedDate)
-    .format('MMMM D, YYYY');
 }
 
 // sendCertifiedEmail(
@@ -92,51 +79,27 @@ function sendCertifiedEmail(
   send$
 ) {
   if (
+    !isEmail(email) ||
     !isFrontEndCert ||
     !isBackEndCert ||
     !isDataVisCert
   ) {
     return Observable.just(false);
   }
-  let frontEndDate;
-  let backEndDate;
-  let dataVisDate;
-  try {
-    frontEndDate = getFormatedDate(challengeMap, frontEndChallengeId);
-    backEndDate = getFormatedDate(challengeMap, backEndChallengeId);
-    dataVisDate = getFormatedDate(challengeMap, dataVisChallengeId);
-  } catch (err) {
-    return Observable.throw(err);
-  }
-
-  const notifyTeam = {
-    type: 'email',
-    to: 'Michael@FreeCodeCamp.com',
-    from: 'Team@FreeCodeCamp.com',
-    subject: 'A new user has arrived!',
-    text: renderNotifyEmail({
-      username,
-      name,
-      frontEndDate,
-      dataVisDate,
-      backEndDate
-    })
-  };
   const notifyUser = {
     type: 'email',
     to: email,
-    from: 'Michael@FreeCodeCamp.com',
-    subject: 'Congratulation on gaining your third certification!',
+    from: 'team@freeCodeCamp.org',
+    subject: dedent`
+      Congratulations on completing all of the
+      freeCodeCamp certificates!
+    `,
     text: renderCertifedEmail({
       username,
       name
     })
   };
-  return Observable.combineLatest(
-    send$(notifyTeam),
-    send$(notifyUser),
-    () => true
-  );
+  return send$(notifyUser).map(() => true);
 }
 
 export default function certificate(app) {
@@ -235,10 +198,10 @@ export default function certificate(app) {
             if (user.name === '') {
               return res.status(200).send(
                 dedent`
-                  We need your name so we can put it on your certificate. 
+                  We need your name so we can put it on your certificate.
                   <a href="https://github.com/settings/profile">Add your
                   name to your GitHub account</a>, then go to your
-                  <a href="https://www.freecodecamp.com/settings">settings
+                  <a href="https://www.freecodecamp.org/settings">settings
                   page</a> and click the "update my portfolio from GitHub"
                   button. Then we can issue your certificate.
                   `

@@ -4,12 +4,17 @@ import { Button, Modal } from 'react-bootstrap';
 import PureComponent from 'react-pure-render/component';
 
 import ns from './ns.json';
+import {
+  createIssue,
+  openIssueSearch,
+  closeBugModal,
 
-import { createIssue, openIssueSearch, closeBugModal } from './redux/actions';
+  bugModalSelector
+} from './redux';
 
-const mapStateToProps = state => ({ isOpen: state.challengesApp.isBugOpen });
+const mapStateToProps = state => ({ isOpen: bugModalSelector(state) });
 const mapDispatchToProps = { createIssue, openIssueSearch, closeBugModal };
-const bugLink = 'http://forum.freecodecamp.com/t/how-to-report-a-bug/19543';
+const bugLink = 'http://forum.freecodecamp.org/t/how-to-report-a-bug/19543';
 
 const propTypes = {
   closeBugModal: PropTypes.func,
@@ -68,7 +73,7 @@ export class BugModal extends PureComponent {
             bsStyle='primary'
             onClick={ createIssue }
             >
-            Create my GitHub issue
+            Create topic for issue in community forum
           </Button>
           <Button
             block={ true }

@@ -1,30 +1,29 @@
 import React, { PropTypes } from 'react';
 import { createSelector } from 'reselect';
 import { connect } from 'react-redux';
-import Youtube from 'react-youtube';
 import PureComponent from 'react-pure-render/component';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Image } from 'react-bootstrap';
 
 import SidePanel from './Side-Panel.jsx';
 import ToolPanel from './Tool-Panel.jsx';
 import BugModal from '../../Bug-Modal.jsx';
 
-import { challengeSelector } from '../../redux/selectors';
+import { challengeMetaSelector } from '../../redux';
+import { challengeSelector } from '../../../../redux';
 
 const mapStateToProps = createSelector(
   challengeSelector,
+  challengeMetaSelector,
   (
     {
-      challenge: {
-        id,
-        description,
-        challengeSeed: [ videoId = '' ] = []
-      } = {},
-      title
-    }
+      id,
+      description,
+      image
+    },
+    { title }
   ) => ({
     id,
-    videoId,
+    image,
     title,
     description
   })
@@ -32,9 +31,9 @@ const mapStateToProps = createSelector(
 const propTypes = {
   description: PropTypes.arrayOf(PropTypes.string),
   id: PropTypes.string,
+  image: PropTypes.string,
   isCompleted: PropTypes.bool,
-  title: PropTypes.string,
-  videoId: PropTypes.string
+  title: PropTypes.string
 };
 
 export class Project extends PureComponent {
@@ -42,33 +41,31 @@ export class Project extends PureComponent {
     const {
       id,
       title,
-      videoId,
+      image,
       isCompleted,
       description
     } = this.props;
+    const imageURL = '//i.imgur.com/' + image + '.png';
     return (
-      <Row>
-        <Col md={ 4 }>
-          <SidePanel
-            description={ description }
-            isCompleted={ isCompleted }
-            title={ title }
-          />
-        </Col>
-        <Col
-          md={ 8 }
-          xs={ 12 }
-          >
-          <Youtube
-            id={ id }
-            videoId={ videoId }
-          />
-          <br />
-          <ToolPanel />
-          <br />
-          <BugModal />
-        </Col>
-      </Row>
+      <Col
+        md={ 8 }
+        xs={ 12 }
+        >
+        <SidePanel
+          description={ description }
+          isCompleted={ isCompleted }
+          title={ title }
+        />
+        <Image
+          id={ id }
+          responsive={ true }
+          src={ imageURL }
+        />
+        <br />
+        <ToolPanel />
+        <br />
+        <BugModal />
+      </Col>
     );
   }
 }

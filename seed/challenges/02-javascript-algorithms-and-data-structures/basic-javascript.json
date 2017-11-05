@@ -536,7 +536,7 @@
       ],
       "tests": [
         "assert(myVar === 88, 'message: <code>myVar</code> should equal <code>88</code>');",
-        "assert(/myVar\\s*\\=.*myVar\\s*\\+\\s*1/.test(code) === false, 'message: <code>myVar = myVar + 1;</code> should be changed');",
+        "assert(/var\\s*myVar\\s*=\\s*87;\\s*\\/*.*\\s*myVar\\+\\+;/.test(code), 'message: <code>myVar = myVar + 1;</code> should be changed');",
         "assert(/[+]{2}\\s*myVar|myVar\\s*[+]{2}/.test(code), 'message: Use the <code>++</code> operator');",
         "assert(/var myVar = 87;/.test(code), 'message: Do not change code above the line');"
       ],
@@ -585,6 +585,7 @@
       ],
       "tests": [
         "assert(myVar === 10, 'message: <code>myVar</code> should equal <code>10</code>');",
+        "assert(/var\\s*myVar\\s*=\\s*11;\\s*\\/*.*\\s*myVar--;/.test(code), 'message: <code>myVar = myVar - 1;</code> should be changed');",
         "assert(/[-]{2}\\s*myVar|myVar\\s*[-]{2}/.test(code), 'message: Use the <code>--</code> operator on <code>myVar</code>');",
         "assert(/var myVar = 11;/.test(code), 'message: Do not change code above the line');"
       ],
@@ -1079,13 +1080,17 @@
       "id": "56533eb9ac21ba0edf2244b4",
       "title": "Quoting Strings with Single Quotes",
       "description": [
-        "<dfn>String</dfn> values in JavaScript may be written with single or double quotes, so long as you start and end with the same type of quote. Unlike some languages, single and double quotes are functionally identical in JavaScript.",
-        "<blockquote>\"This string has \\\"double quotes\\\" in it\"</blockquote>",
-        "The value in using one or the other has to do with the need to <dfn>escape</dfn> quotes of the same type. Unless they are escaped, you cannot have more than one pair of whichever quote type begins a string.",
-        "If you have a string with many double quotes, this can be difficult to read and write. Instead, use single quotes:",
-        "<blockquote>'This string has \"double quotes\" in it. And \"probably\" lots of them.'</blockquote>",
+        "<dfn>String</dfn> values in JavaScript may be written with single or double quotes, as long as you start and end with the same type of quote. Unlike some other programming languages, single and double quotes work the same in JavaScript.",
+        "<blockquote>doubleQuoteStr = \"This is a string\"; <br/>singleQuoteStr = 'This is also a string';</blockquote>",
+        "The reason why you might want to use one type of quote over the other is if you want to use both in a string. This might happen if you want to save a conversation in a string and have the conversation in quotes. Another use for it would be saving an <code>&#60;a&#62;</code> tag with various attributes in quotes, all within a string.",
+        "<blockquote>conversation = 'Finn exclaims to Jake, \"Algebraic!\"';</blockquote>",
+        "However, this becomes a problem if you need to use the outermost quotes within it. Remember, a string has the same kind of quote at the beginning and end. But if you have that same quote somewhere in the middle, the string will stop early and throw an error.",
+        "<blockquote>goodStr = 'Jake asks Finn, \"Hey, let\\'s go on an adventure?\"'; <br/>badStr = 'Finn responds, \"Let's go!\"'; // Throws an error</blockquote>",
+        "In the <dfn>goodStr</dfn> above, you can use both quotes safely by using the backslash <code>\\</code> as an escape character.",
+        "<strong>Note</strong><br/>The backslash <code>\\</code> should not be be confused with the forward slash <code>/</code>. They do not do the same thing.",
         "<hr>",
-        "Change the provided string from double to single quotes and remove the escaping. Do not change anything else."
+        "Change the provided string to a string with single quotes at the beginning and end and no escape characters.",
+        "Right now, the <code>&#60;a&#62;</code> tag in the string uses double quotes everywhere. You will need to change the outer quotes to single quotes so you can remove the escape characters."
       ],
       "releasedOn": "January 1, 2016",
       "challengeSeed": [
@@ -1692,9 +1697,12 @@
       "description": [
         "We will now use our knowledge of strings to build a \"<a href='https://en.wikipedia.org/wiki/Mad_Libs' target='_blank'>Mad Libs</a>\" style word game we're calling \"Word Blanks\". You will create an (optionally humorous) \"Fill in the Blanks\" style sentence. Here's an example of an incomplete sentence.",
         "<code>\"The ______ ______ looked around ______ then ______ into the house\"</code>",
-        "These four blanks would be filled in this order: (adjective) (noun) (adverb) (verb)",
-        "You will need to use string concatenation to build a new string, <code>result</code>, using the variables <code>myNoun</code>, <code>myAdjective</code>, <code>myVerb</code>, and <code>myAdverb</code>. These variables are passed to the function as parameters. Don't change these parameter names in the function.",
-        "Include additional strings and spaces (which will not change) in between the provided variables to make a complete sentence."
+        "These four blanks would be filled in this order: (adjective) (noun) (adverb) (verb). The completed sentence can then be assigned to a variable as follows:",
+        "<blockquote>var sentence = \"The frightended child looked around anxiously then walked into the house.\";</blockquote>",
+        "<hr>",
+        "In this challenge, we provide you with a noun, a verb, an adjective and an adverb. You need to form a complete sentence using words of your choice, along with the words we provide.",
+        "You will need to use the string concatenation operator <code>+</code> to build a new string, using the provided variables: <code>myNoun</code>, <code>myAdjective</code>, <code>myVerb</code>, and <code>myAdverb</code>. These variables are passed to the function as parameters. Don't change these parameter names in the function.",
+        "You will then assign the completed sentence to the <code>result</code> variable. You also need to account for spaces in your string, so that the final sentence has spaces between all the words."
       ],
       "releasedOn": "January 1, 2016",
       "challengeSeed": [
@@ -2621,10 +2629,11 @@
       ],
       "tail": [],
       "solutions": [
-        "function timesFive(num) {\n  return num * 5;\n}"
+        "function timesFive(num) {\n  return num * 5;\n}\ntimesFive(10);"
       ],
       "tests": [
         "assert(typeof timesFive === 'function', 'message: <code>timesFive</code> should be a function');",
+        "assert(code.match(/timesFive\\(\\s*\\d+\\s*\\)/g), 'message: function <code>timesFive</code> should be called with a number');",
         "assert(timesFive(5) === 25, 'message: <code>timesFive(5)</code> should return <code>25</code>');",
         "assert(timesFive(2) === 10, 'message: <code>timesFive(2)</code> should return <code>10</code>');",
         "assert(timesFive(0) === 0, 'message: <code>timesFive(0)</code> should return <code>0</code>');"
@@ -2644,6 +2653,51 @@
           ]
         }
       }
+    },
+    {
+      "id": "598e8944f009e646fc236146",
+      "title": "Understanding Undefined Value returned from a Function",
+      "description": [
+        "A function can include the <code>return</code> statement but it does not have to. In the case that the function doesn't have a <code>return</code> statement, when you call it, the function processes the inner code but the returned value is <code>undefined</code>.",
+        "<strong>Example</strong>",
+        "<blockquote>var sum = 0;<br>function addSum(num) {<br>  sum = sum + num;<br>}<br>var returnedValue = addSum(3); // sum will be modified but returned value is undefined</blockquote>",
+        "<code>addSum</code> is a function without a <code>return</code> statement. The function will change the global <code>sum</code> variable but the returned value of the function is <code>undefined</code>",
+        "<hr>",
+        "Create a function <code>addFive</code> without any arguments. This function adds 5 to the <code>sum</code> variable, but its returned value is <code>undefined</code>."
+      ],
+      "releasedOn": "August 11, 2017",
+      "challengeSeed": [
+        "// Example",
+        "var sum = 0;",
+        "function addThree() {",
+        "  sum = sum + 3;",
+        "}",
+        "",
+        "// Only change code below this line",
+        "",
+        "",
+        "",
+        "// Only change code above this line",
+        "var returnedValue = addFive();"
+      ],
+      "tail": [
+        "var sum = 0;",
+        "function addThree() {sum = sum + 3;}",
+        "addThree();",
+        "addFive();"
+      ],
+      "solutions": [
+        "function addFive() {\n sum = sum + 5;\n}"
+      ],
+      "tests": [
+        "assert(typeof addFive === 'function', 'message: <code>addFive</code> should be a function');",
+        "assert(sum === 8, 'message: <code>sum</code> should be equal to 8');",
+        "assert(addFive() === undefined, 'message: Returned value from <code>addFive</code> should be <code>undefined</code>');",
+        "assert(code.match(/(sum\\s*\\=\\s*sum\\s*\\+\\s*5)|(sum\\s*\\+\\=\\s*5)/g).length === 1, 'message: Inside of your functions, add 5 to the <code>sum</code> variable');"
+      ],
+      "type": "waypoint",
+      "challengeType": 1,
+      "translations": {}
     },
     {
       "id": "56533eb9ac21ba0edf2244c3",
@@ -2897,7 +2951,7 @@
         "The most basic operator is the equality operator <code>==</code>. The equality operator compares two values and returns <code>true</code> if they're equivalent or <code>false</code> if they are not. Note that equality is different from assignment (<code>=</code>), which assigns the value at the right of the operator to a variable in the left.",
         "<blockquote>function equalityTest(myVal) {<br>  if (myVal == 10) {<br>     return \"Equal\";<br>  }<br>  return \"Not Equal\";<br>}</blockquote>",
         "If <code>myVal</code> is equal to <code>10</code>, the equality operator returns <code>true</code>, so the code in the curly braces will execute, and the function will return <code>\"Equal\"</code>. Otherwise, the function will return <code>\"Not Equal\"</code>.",
-        "In order for JavaScript to compare two different <code>data types</code> (for example, <code>numbers</code> and <code>strings</code>), it must convert one type to another. Once it does, however, it can compare terms as follows:",
+        "In order for JavaScript to compare two different <code>data types</code> (for example, <code>numbers</code> and <code>strings</code>), it must convert one type to another. This is known as \"Type Coercion\". Once it does, however, it can compare terms as follows:",
         "<blockquote>   1   ==  1    // true<br>   1   ==  2    // false<br>   1   == '1'   // true<br>  \"3\"  ==  3    // true</blockquote>",
         "<hr>",
         "Add the <code>equality operator</code> to the indicated line so that the function will return \"Equal\" when <code>val</code> is equivalent to <code>12</code>"
@@ -2946,7 +3000,8 @@
       "id": "56533eb9ac21ba0edf2244d1",
       "title": "Comparison with the Strict Equality Operator",
       "description": [
-        "Strict equality (<code>===</code>) is the counterpart to the equality operator (<code>==</code>). Unlike the equality operator, strict equality tests both the <code>data type</code> and value of the compared elements.",
+        "Strict equality (<code>===</code>) is the counterpart to the equality operator (<code>==</code>). However, unlike the equality operator, which attempts to convert both values being compared to a common type, the strict equality operator does not perform a type conversion.",
+        "If the values being compared have different types, they are considered unequal, and the strict equality operator will return false.",
         "<strong>Examples</strong>",
         "<blockquote>3 === 3   // true<br>3 === '3' // false</blockquote>",
         "In the second example, <code>3</code> is a <code>Number</code> type and <code>'3'</code> is a <code>String</code> type.",
@@ -2990,6 +3045,44 @@
           ]
         }
       }
+    },
+    {
+      "id": "599a789b454f2bbd91a3ff4d",
+      "title": "Practice comparing different values",
+      "description": [
+        "In the last two challenges, we learned about the equality operator (<code>==</code>) and the strict equality operator (<code>===</code>). Let's do a quick review and practice using these operators some more.",
+        "If the values being compared are not of the same type, the equality operator will perform a type conversion, and then evaluate the values. However, the strict equalty operator will compare both the data type and value as-is, without converting one type to the other.",
+        "<strong>Examples</strong>",
+        "<blockquote>3 == '3'  // returns true because JavaScript performs type converstion from string to number<br>3 === '3' // returns false because the types are different and type conversion is not performed</blockquote>",
+        "<strong>Note</strong><br>In JavaScript, you can determine the type of a variable or a value with the <code>typeof</code> operator, as follows:",
+        "<blockquote>typeof 3   // returns 'number'<br>typeof '3' // returns 'string'</blockquote>",
+        "<hr>",
+        "The <code>compareEquality</code> function in the editor compares two values using the <code>equality operator</code>. Modify the function so that it returns \"Equal\" only when the values are strictly equal."
+      ],
+      "releasedOn": "August 21, 2017",
+      "challengeSeed": [
+        "// Setup",
+        "function compareEquality(a, b) {",
+        "  if (a == b) { // Change this line",
+        "    return \"Equal\";",
+        "  }",
+        "  return \"Not Equal\";",
+        "}",
+        "",
+        "// Change this value to test",
+        "compareEquality(10, \"10\");"
+      ],
+      "solutions": [
+        "function compareEquality(a,b) {\n  if (a === b) {\n    return \"Equal\";\n  }\n  return \"Not Equal\";\n}"
+      ],
+      "tests": [
+        "assert(compareEquality(10, \"10\") === \"Not Equal\", 'message: <code>compareEquality(10, \"10\")</code> should return \"Not Equal\"');",
+        "assert(compareEquality(\"20\", 20) === \"Not Equal\", 'message: <code>compareEquality(\"20\", 20)</code> should return \"Not Equal\"');",
+        "assert(code.match(/===/g), 'message: You should use the <code>===</code> operator');"
+      ],
+      "type": "waypoint",
+      "challengeType": 1,
+      "translations": {}
     },
     {
       "id": "56533eb9ac21ba0edf2244d2",
@@ -3562,7 +3655,7 @@
       "title": "Logical Order in If Else Statements",
       "description": [
         "Order is important in <code>if</code>, <code>else if</code> statements.",
-        "The loop is executed from top to bottom so you will want to be careful of what statement comes first.",
+        "The function is executed from top to bottom so you will want to be careful of what statement comes first.",
         "Take these two functions as an example.",
         "Here's the first:",
         "<blockquote>function foo(x) {<br>  if (x < 1) {<br>    return \"Less than one\";<br>  } else if (x < 2) {<br>    return \"Less than two\";<br>  } else {<br>    return \"Greater than or equal to two\";<br>  }<br>}</blockquote>",
@@ -3679,10 +3772,11 @@
         "In the game of <a href=\"https://en.wikipedia.org/wiki/Golf\" target=\"_blank\">golf</a> each hole has a <code>par</code> meaning the average number of <code>strokes</code> a golfer is expected to make in order to sink the ball in a hole to complete the play. Depending on how far above or below <code>par</code> your <code>strokes</code> are, there is a different nickname.",
         "Your function will be passed <code>par</code> and <code>strokes</code> arguments. Return the correct string according to this table which lists the strokes in order of priority; top (highest) to bottom (lowest):",
         "<table class=\"table table-striped\"><thead><tr><th>Strokes</th><th>Return</th></tr></thead><tbody><tr><td>1</td><td>\"Hole-in-one!\"</td></tr><tr><td>&lt;= par - 2</td><td>\"Eagle\"</td></tr><tr><td>par - 1</td><td>\"Birdie\"</td></tr><tr><td>par</td><td>\"Par\"</td></tr><tr><td>par + 1</td><td>\"Bogey\"</td></tr><tr><td>par + 2</td><td>\"Double Bogey\"</td></tr><tr><td>&gt;= par + 3</td><td>\"Go Home!\"</td></tr></tbody></table>",
-        "<code>par</code> and <code>strokes</code> will always be numeric and positive."
+        "<code>par</code> and <code>strokes</code> will always be numeric and positive. We have added an array of all the names for your convenience."
       ],
       "releasedOn": "January 1, 2016",
       "challengeSeed": [
+        "var names = [\"Hole-in-one!\", \"Eagle\", \"Birdie\", \"Par\", \"Bogey\", \"Double Bogey\", \"Go Home!\"];",
         "function golfScore(par, strokes) {",
         "  // Only change code below this line",
         "  ",
@@ -3730,7 +3824,7 @@
       "description": [
         "If you have many options to choose from, use a <code>switch</code> statement. A <code>switch</code> statement tests a value and can have many <code>case</code> statements which define various possible values. Statements are executed from the first matched <code>case</code> value until a <code>break</code> is encountered.",
         "Here is a <dfn>pseudocode</dfn> example:",
-        "<blockquote>switch (num) {<br>  case value1:<br>    statement1;<br>    break;<br>  case value2:<br>    statement2;<br>    break;<br>...<br>  case valueN:<br>    statementN;<br>    break;<br>}</blockquote>",
+        "<blockquote>switch(num) {<br>  case value1:<br>    statement1;<br>    break;<br>  case value2:<br>    statement2;<br>    break;<br>...<br>  case valueN:<br>    statementN;<br>    break;<br>}</blockquote>",
         "<code>case</code> values are tested with strict equality (<code>===</code>). The <code>break</code> tells JavaScript to stop executing statements. If the <code>break</code> is omitted, the next statement will be executed.",
         "<hr>",
         "Write a switch statement which tests <code>val</code> and sets <code>answer</code> for the following conditions:<br><code>1</code> - \"alpha\"<br><code>2</code> - \"beta\"<br><code>3</code> - \"gamma\"<br><code>4</code> - \"delta\""
@@ -3752,7 +3846,7 @@
         ""
       ],
       "solutions": [
-        "function caseInSwitch(val) {\n  var answer = \"\";\n\n  switch (val) {\n    case 1:\n      answer = \"alpha\";\n      break;\n    case 2:\n      answer = \"beta\";\n      break;\n    case 3:\n      answer = \"gamma\";\n      break;\n    case 4:\n      answer = \"delta\";\n  }\n  return answer;  \n}"
+        "function caseInSwitch(val) {\n  var answer = \"\";\n\n  switch(val) {\n    case 1:\n      answer = \"alpha\";\n      break;\n    case 2:\n      answer = \"beta\";\n      break;\n    case 3:\n      answer = \"gamma\";\n      break;\n    case 4:\n      answer = \"delta\";\n  }\n  return answer;  \n}"
       ],
       "tests": [
         "assert(caseInSwitch(1) === \"alpha\", 'message: <code>caseInSwitch(1)</code> should have a value of \"alpha\"');",
@@ -3773,7 +3867,7 @@
           "description": [
             "Si tienes varias opciones para elegir, usa una sentencia <code>switch</code>. Una sentencia <code>switch</code> prueba un valor y puede tener varias sentencias <code>case</code> las cuales definen varios posibles valores. Las sentencias son ejecutadas desde el primer valor <code>case</code> igualado hasta que se encuentr un <code>break</code>.",
             "Aquí hay un <dfn>pseudocódigo</dfn> de ejemplo:",
-            "<blockquote>switch (num) {<br>  case valor1:<br>    sentencia1;<br>    break;<br>  case valor2:<br>    sentencia2;<br>    break;<br>...<br>  case valorN:<br>    sentenciaN;<br>    break;<br>}</blockquote>",
+            "<blockquote>switch(num) {<br>  case valor1:<br>    sentencia1;<br>    break;<br>  case valor2:<br>    sentencia2;<br>    break;<br>...<br>  case valorN:<br>    sentenciaN;<br>    break;<br>}</blockquote>",
             "Los valores <code>case</code> son probados con estricta igualdad (<code>===</code>). El <code>break</code> le dice a JavaScript que pare la ejecución del bloque de sentencias en el que está. Si se omite <code>break</code>, se ejecutará la siguiente sentencia.",
             "<h4>Instrucciones</h4>",
             "Escribe una sentencia <code>switch</code> que pruebe <code>val</code> y establezca <code>answer</code> para las siguientes condiciones:<br><code>1</code> - \"alpha\"<br><code>2</code> - \"beta\"<br><code>3</code> - \"gamma\"<br><code>4</code> - \"delta\""
@@ -3787,7 +3881,7 @@
       "description": [
         "In a <code>switch</code> statement you may not be able to specify all possible values as <code>case</code> statements. Instead, you can add the <code>default</code> statement which will be executed if no matching <code>case</code> statements are found. Think of it like the final <code>else</code> statement in an <code>if/else</code> chain.",
         "A <code>default</code> statement should be the last case.",
-        "<blockquote>switch (num) {<br>  case value1:<br>    statement1;<br>    break;<br>  case value2:<br>    statement2;<br>    break;<br>...<br>  default:<br>    defaultStatement;<br>}</blockquote>",
+        "<blockquote>switch (num) {<br>  case value1:<br>    statement1;<br>    break;<br>  case value2:<br>    statement2;<br>    break;<br>...<br>  default:<br>    defaultStatement;<br>    break;<br>}</blockquote>",
         "<hr>",
         "Write a switch statement to set <code>answer</code> for the following conditions:<br><code>\"a\"</code> - \"apple\"<br><code>\"b\"</code> - \"bird\"<br><code>\"c\"</code> - \"cat\"<br><code>default</code> - \"stuff\""
       ],
@@ -3828,7 +3922,7 @@
           "description": [
             "En una sentencia <code>switch</code> puede que no seas capaz de especificar todos los posibles valores en las sentencias <code>case</code>. En su lugar, puedes agregar la sentencia <code>default</code> la cual será ejecutada si no es encontrada ninguna coincidencia con alguna sentencia <code>case</code>. Piensa en esto como la última sentencia <code>else</code> en una cadena <code>if/else</code>.",
             "Una sentencia <code>default</code> debería ser el último caso.",
-            "<blockquote>switch (num) {<br>  case valor1:<br>    sentencia1;<br>    break;<br>  case valor2:<br>    sentencia2;<br>    break;<br>...<br>  default:<br>    sentenciaDefault;<br>}</blockquote>",
+            "<blockquote>switch(num) {<br>  case valor1:<br>    sentencia1;<br>    break;<br>  case valor2:<br>    sentencia2;<br>    break;<br>...<br>  default:<br>    sentenciaDefault;<br>}</blockquote>",
             "<h4>Instrucciones</h4>",
             "Escribe una sentencia switch para establecer <code>answer</code> para las siguientes condiciones:<br><code>\"a\"</code> - \"apple\"<br><code>\"b\"</code> - \"bird\"<br><code>\"c\"</code> - \"cat\"<br><code>default</code> - \"stuff\""
           ]
@@ -3863,7 +3957,7 @@
         ""
       ],
       "solutions": [
-        "function sequentialSizes(val) {\n  var answer = \"\";\n  \n  switch (val) {\n    case 1:\n    case 2:\n    case 3:\n      answer = \"Low\";\n      break;\n    case 4:\n    case 5:\n    case 6:\n      answer = \"Mid\";\n      break;\n    case 7:\n    case 8:\n    case 9:\n      answer = \"High\";\n  }\n  \n  return answer;  \n}"
+        "function sequentialSizes(val) {\n  var answer = \"\";\n  \n  switch(val) {\n    case 1:\n    case 2:\n    case 3:\n      answer = \"Low\";\n      break;\n    case 4:\n    case 5:\n    case 6:\n      answer = \"Mid\";\n      break;\n    case 7:\n    case 8:\n    case 9:\n      answer = \"High\";\n  }\n  \n  return answer;  \n}"
       ],
       "tests": [
         "assert(sequentialSizes(1) === \"Low\", 'message: <code>sequentialSizes(1)</code> should return \"Low\"');",
@@ -3901,7 +3995,7 @@
         "If you have many options to choose from, a <code>switch</code> statement can be easier to write than many chained <code>if</code>/<code>else if</code> statements. The following:",
         "<blockquote>if (val === 1) {<br>  answer = \"a\";<br>} else if (val === 2) {<br>  answer = \"b\";<br>} else {<br>  answer = \"c\";<br>}</blockquote>",
         "can be replaced with:",
-        "<blockquote>switch (val) {<br>  case 1:<br>    answer = \"a\";<br>    break;<br>  case 2:<br>    answer = \"b\";<br>    break;<br>  default:<br>    answer = \"c\";<br>}</blockquote>",
+        "<blockquote>switch(val) {<br>  case 1:<br>    answer = \"a\";<br>    break;<br>  case 2:<br>    answer = \"b\";<br>    break;<br>  default:<br>    answer = \"c\";<br>}</blockquote>",
         "<hr>",
         "Change the chained <code>if</code>/<code>else if</code> statements into a <code>switch</code> statement."
       ],
@@ -3932,7 +4026,7 @@
         ""
       ],
       "solutions": [
-        "function chainToSwitch(val) {\n  var answer = \"\";\n\n  switch (val) {\n    case \"bob\":\n      answer = \"Marley\";\n      break;\n    case 42:\n      answer = \"The Answer\";\n      break;\n    case 1:\n      answer = \"There is no #1\";\n      break;\n    case 99:\n      answer = \"Missed me by this much!\";\n      break;\n    case 7:\n      answer = \"Ate Nine\";\n  }\n  return answer;  \n}"
+        "function chainToSwitch(val) {\n  var answer = \"\";\n\n  switch(val) {\n    case \"bob\":\n      answer = \"Marley\";\n      break;\n    case 42:\n      answer = \"The Answer\";\n      break;\n    case 1:\n      answer = \"There is no #1\";\n      break;\n    case 99:\n      answer = \"Missed me by this much!\";\n      break;\n    case 7:\n      answer = \"Ate Nine\";\n  }\n  return answer;  \n}"
       ],
       "tests": [
         "assert(!/else/g.test(code), 'message: You should not use any <code>else</code> statements anywhere in the editor');",
@@ -3955,7 +4049,7 @@
             "Si tienes varias opciones para elegir, una sentencia <code>switch</code> puede ser más fácil de escribir que varias sentencias <code>if</code>/<code>if else</code> anidadas. Lo siguiente:",
             "<blockquote>if (val === 1) {<br>  respuesta = \"a\";<br>} else if (val === 2) {<br>  respuesta = \"b\";<br>} else {<br>  respuesta = \"c\";<br>}</blockquote>",
             "puede ser reemplazado con:",
-            "<blockquote>switch (val) {<br>  case 1:<br>    respuesta = \"a\";<br>    break;<br>  case 2:<br>    respuesta = \"b\";<br>    break;<br>  default:<br>    respuesta = \"c\";<br>}</blockquote>",
+            "<blockquote>switch(val) {<br>  case 1:<br>    respuesta = \"a\";<br>    break;<br>  case 2:<br>    respuesta = \"b\";<br>    break;<br>  default:<br>    respuesta = \"c\";<br>}</blockquote>",
             "<h4>Instrucciones</h4>",
             "Cambia las sentencias <code>if</code>/<code>if else</code> anidadas dentro de una sentencia <code>switch</code>."
           ]
@@ -4026,7 +4120,7 @@
         "The above outputs \"Hello\" to the console, returns \"World\", but <code>\"byebye\"</code> is never output, because the function exits at the <code>return</code> statement.",
         "<hr>",
         "Modify the function <code>abTest</code> so that if <code>a</code> or <code>b</code> are less than <code>0</code> the function will immediately exit with a value of <code>undefined</code>.",
-        "<strong>Hint</strong><br>Remember that <a href='http://www.freeCodeCamp.com/challenges/understanding-uninitialized-variables' target='_blank'><code>undefined</code> is a keyword</a>, not a string."
+        "<strong>Hint</strong><br>Remember that <a href='http://www.freecodecamp.org/challenges/understanding-uninitialized-variables' target='_blank'><code>undefined</code> is a keyword</a>, not a string."
       ],
       "releasedOn": "January 1, 2016",
       "challengeSeed": [
@@ -4070,7 +4164,7 @@
             "Esta presenta en consola \"Hola\", retorna \"Mundo\", pero <code>\"chaochao\"</code> nunca se presenta, porque la función sale con la sentencia <code>return</code>.",
             "<h4>Instrucciones</h4>",
             "Modifica la función <code>abTest</code> de manera que si <code>a</code> o <code>b</code> son menores que <code>0</code> la función saldrá inmediatamente con un valor <code>undefined</code>.",
-            "<strong>Pista</strong><br>Recuerda que <a href='http://www.freeCodeCamp.com/challenges/understanding-uninitialized-variables' target='_blank'><code>undefined</code> es una palabra clave</a>, no una cadena."
+            "<strong>Pista</strong><br>Recuerda que <a href='http://www.freecodecamp.org/challenges/understanding-uninitialized-variables' target='_blank'><code>undefined</code> es una palabra clave</a>, no una cadena."
           ]
         }
       }
@@ -4135,9 +4229,12 @@
       "description": [
         "You may have heard the term <code>object</code> before.",
         "Objects are similar to <code>arrays</code>, except that instead of using indexes to access and modify their data, you access the data in objects through what are called <code>properties</code>.",
-        "Here's a sample object:",
-        "<blockquote>var cat = {<br>  \"name\": \"Whiskers\",<br>  \"legs\": 4,<br>  \"tails\": 1,<br>  \"enemies\": [\"Water\", \"Dogs\"]<br>};</blockquote>",
         "Objects are useful for storing data in a structured way, and can represent real world objects, like a cat.",
+        "Here's a sample cat object:",
+        "<blockquote>var cat = {<br>  \"name\": \"Whiskers\",<br>  \"legs\": 4,<br>  \"tails\": 1,<br>  \"enemies\": [\"Water\", \"Dogs\"]<br>};</blockquote>",
+        "In this example, all the properties are stored as strings, such as - <code>\"name\"</code>, <code>\"legs\"</code>, and <code>\"tails\"</code>. However, you can also use numbers as properties. You can even omit the quotes for single-word string properties, as follows:",
+        "<blockquote>var anotherObject = {<br>  make: \"Ford\",<br>  5: \"five\",<br>  \"model\": \"focus\"<br>};</blockquote>",
+        "However, if your object has any non-string properties, JavaScript will automatically typecast them as strings.",
         "<hr>",
         "Make an object that represents a dog called <code>myDog</code> which contains the properties <code>\"name\"</code> (a string), <code>\"legs\"</code>, <code>\"tails\"</code> and <code>\"friends\"</code>.",
         "You can set these object properties to whatever values you want, as long <code>\"name\"</code> is a string, <code>\"legs\"</code> and <code>\"tails\"</code> are numbers, and <code>\"friends\"</code> is an array."
@@ -4197,11 +4294,11 @@
     },
     {
       "id": "56533eb9ac21ba0edf2244c7",
-      "title": "Accessing Object Properties with the Dot Operator",
+      "title": "Accessing Object Properties with Dot Notation",
       "description": [
-        "There are two ways to access the properties of an object: the dot operator (<code>.</code>) and bracket notation (<code>[]</code>), similar to an array.",
-        "The dot operator is what you use when you know the name of the property you're trying to access ahead of time.",
-        "Here is a sample of using the dot operator (<code>.</code>) to read an object's property:",
+        "There are two ways to access the properties of an object: dot notation (<code>.</code>) and bracket notation (<code>[]</code>), similar to an array.",
+        "Dot notation is what you use when you know the name of the property you're trying to access ahead of time.",
+        "Here is a sample of using dot notation (<code>.</code>) to read an object's property:",
         "<blockquote>var myObj = {<br>  prop1: \"val1\",<br>  prop2: \"val2\"<br>};<br>var prop1val = myObj.prop1; // val1<br>var prop2val = myObj.prop2; // val2</blockquote>",
         "<hr>",
         "Read in the property values of <code>testObj</code> using dot notation. Set the variable <code>hatValue</code> equal to the object's property <code>hat</code> and set the variable <code>shirtValue</code> equal to the object's property <code>shirt</code>."
@@ -4254,8 +4351,9 @@
       "title": "Accessing Object Properties with Bracket Notation",
       "description": [
         "The second way to access the properties of an object is bracket notation (<code>[]</code>). If the property of the object you are trying to access has a space in its name, you will need to use bracket notation.",
+        "However, you can still use bracket notation on object properties without spaces.",
         "Here is a sample of using bracket notation to read an object's property:",
-        "<blockquote>var myObj = {<br>  \"Space Name\": \"Kirk\",<br>  \"More Space\": \"Spock\"<br>};<br>myObj[\"Space Name\"]; // Kirk<br>myObj['More Space']; // Spock</blockquote>",
+        "<blockquote>var myObj = {<br>  \"Space Name\": \"Kirk\",<br>  \"More Space\": \"Spock\",<br>  \"NoSpace\": \"USS Enterprise\"<br>};<br>myObj[\"Space Name\"]; // Kirk<br>myObj['More Space']; // Spock<br>myObj[\"NoSpace\"];    // USS Enterprise</blockquote>",
         "Note that property names with spaces in them must be in quotes (single or double).",
         "<hr>",
         "Read the values of the properties <code>\"an entree\"</code> and <code>\"the drink\"</code> of <code>testObj</code> using bracket notation and assign them to <code>entreeValue</code> and <code>drinkValue</code> respectively."
@@ -4307,11 +4405,11 @@
       "id": "56533eb9ac21ba0edf2244c9",
       "title": "Accessing Object Properties with Variables",
       "description": [
-        "Another use of bracket notation on objects is to use a variable to access a property. This can be very useful for iterating through lists of the object properties or for doing the lookup.",
+        "Another use of bracket notation on objects is to access a property which is stored as the value of a variable. This can be very useful for iterating through an object's properties or when accessing a lookup table.",
         "Here is an example of using a variable to access a property:",
-        "<blockquote>var someProp = \"propName\";<br>var myObj = {<br>  propName: \"Some Value\"<br >};<br>myObj[someProp]; // \"Some Value\"</blockquote>",
-        "Here is one more:",
-        "<blockquote>var myDog = \"Hunter\";<br>var dogs = {<br>  Fido: \"Mutt\",\n  Hunter: \"Doberman\",\n  Snoopie: \"Beagle\"<br >};<br>var breed = dogs[myDog];<br>console.log(breed);// \"Doberman\"</blockquote>",
+        "<blockquote>var dogs = {<br>  Fido: \"Mutt\",\n  Hunter: \"Doberman\",\n  Snoopie: \"Beagle\"<br>};<br>var myDog = \"Hunter\";<br>var myBreed = dogs[myDog];<br>console.log(myBreed); // \"Doberman\"</blockquote>",
+        "Another way you can use this concept is when the property's name is collected dynamically during the program execution, as follows:",
+        "<blockquote>var someObj = {<br>  propName: \"John\"<br>};<br>function propPrefix(str) {<br>  var s = \"prop\";<br>  return s + str;<br>}<br>var someProp = propPrefix(\"Name\"); // someProp now holds the value 'propName'<br>console.log(obj[someProp]); // \"John\"</blockquote>",
         "Note that we  do <em>not</em> use quotes around the variable name when using it to access the property because we are using the <em>value</em> of the variable, not the <em>name</em>.",
         "<hr>",
         "Use the <code>playerNumber</code> variable to look up player <code>16</code> in <code>testObj</code> using bracket notation. Then assign that name to the <code>player</code> variable."

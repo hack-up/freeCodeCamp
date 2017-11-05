@@ -138,32 +138,66 @@
       "id": "587d7b87367417b2b2512b42",
       "title": "Mutate an Array Declared with const",
       "description": [
-        "The <code>const</code> declaration has many use-cases in modern JavaScript.",
+        "The <code>const</code> declaration has many use cases in modern JavaScript.",
         "Some developers prefer to assign all their variables using <code>const</code> by default, unless they know they will need to reassign the value. Only in that case, they use <code>let</code>.",
         "However, it is important to understand that objects (including arrays and functions) assigned to a variable using <code>const</code> are still mutable. Using the <code>const</code> declaration only prevents reassignment of the variable identifier.",
-        "<blockquote>\"use strict\";<br>const s = [5, 6, 7];<br>s = [1, 2, 3]; // throws error, trying to assign a const<br>s[7] = 45; // works just as it would with an array declared with var</blockquote>",
-        "As you can see, you can mutate the object (<code>[5, 6, 7]</code>) itself and the variable identifier (<code>s</code>) will still point to the altered array. Like all arrays, the array assigned to <code>s</code> is mutable, but because <code>const</code> was used, you cannot use the variable identifier, <code>s</code>, to point to a different array using the assignment operator.",
-        "To make an object immutable, you can use <code>Object.freeze()</code>.",
+        "<blockquote>\"use strict\";<br>const s = [5, 6, 7];<br>s = [1, 2, 3]; // throws error, trying to assign a const<br>s[2] = 45; // works just as it would with an array declared with var or let<br>console.log(s); // returns [5, 6, 45]</blockquote>",
+        "As you can see, you can mutate the object <code>[5, 6, 7]</code> itself and the variable <code>s</code> will still point to the altered array <code>[5, 6, 45]</code>. Like all arrays, the array elements in <code>s</code> are mutable, but because <code>const</code> was used, you cannot use the variable identifier <code>s</code> to point to a different array using the assignment operator.",
         "<hr>",
-        "An array is declared as <code>const s = [5, 7, 2]</code>. Change the array to <code>[2, 5, 7]</code>.",
+        "An array is declared as <code>const s = [5, 7, 2]</code>. Change the array to <code>[2, 5, 7]</code> using various element assignment.",
         "<strong>Note</strong><br>Don't forget to add <code>\"use strict\";</code> to the top of your code."
       ],
       "challengeSeed": [
-        "const s = [ 5, 7, 2 ];",
+        "const s = [5, 7, 2];",
         "// change code below this line",
+        "",
         "s = [2, 5, 7];",
+        "",
         "// change code above this line",
         "// Test your code",
         "console.log(s);"
       ],
       "tests": [
-        "// Test user did not replace const keyword",
-        "// Test s is const",
-        "assert.deepEqual(s, [2, 5, 7], 'message: <code>s</code> should be equal to <code>[2, 5, 7]</code>.');",
-        "assert(!Object.isFrozen(s), 'message: <code>s</code> should not be frozen.');"
+        "assert(code.match(/const/g), 'message: Do not replace <code>const</code> keyword.');",
+        "assert(code.match(/const\\s+s/g), 'message: <code>s</code> is declared with <code>const</code>.');",
+        "assert(code.match(/const\\s+s\\s*?=\\s*?\\[\\s*?2\\s*?,\\s*?5\\s*?,\\s*?7\\s*?\\]\\s*?;/g), 'message: Do not change the original array declaration.');",
+        "assert.deepEqual(s, [2, 5, 7], 'message: <code>s</code> should be equal to <code>[2, 5, 7]</code>.');"
       ],
       "type": "waypoint",
       "releasedOn": "Feb 17, 2017",
+      "challengeType": 1,
+      "translations": {}
+    },
+    {
+      "id": "598f48a36c8c40764b4e52b3",
+      "title": "Prevent Object Mutation",
+      "description": [
+        "As seen in previous challenge, <code>const</code> declaration alone doesn't really protect your data from mutation. To ensure your data doesn't change, JavaScript provides a function <code>Object.freeze</code> to prevent data mutation.",
+        "Once the object is freezed, you can no longer add/update/delete properties from it. Any attempt at changing the object will be rejected without any error.",
+        "<blockquote>\nlet obj = {\n  name:\"FreeCodeCamp\"\n  review:\"Awesome\"\n};\nObject.freeze(obj);\nobj.review = \"bad\"; //will be ignored. Mutation not allowed\nobj.newProp = \"Test\"; // will be ignored. Mutation not allowed\nconsole.log(obj); \n// { name: \"FreeCodeCamp\", review:\"Awesome\"}\n</blockquote>",
+        "<hr>",
+        "In this challenge you are going to use <code>Object.freeze</code> to prevent mathematical constants from changing. You need to freeze <code>MATH_CONSTANTS</code> object so that noone is able alter the value of <code>PI</code> or add any more properties to it."
+      ],
+      "challengeSeed": [
+        "const MATH_CONSTANTS = {",
+        "  PI: 3.14",
+        "};",
+        "// change code below this line",
+        "",
+        "",
+        "// change code above this line",
+        "MATH_CONSTANTS.PI = 99;",
+        "// Test your code",
+        "console.log(MATH_CONSTANTS.PI);// should show 3.14"
+      ],
+      "tests": [
+        "// Do not replace <code>const</code> keyword.",
+        "// <code>MATH_CONSTANTS</code> is declared with <code>const</code>.",
+        "// Do not change original <code>MATH_CONSTANTS</code>",
+        "assert.deepEqual(MATH_CONSTANTS, {PI: 3.14}, 'message: <code>MATH_CONSTANTS.PI</code> should be equal to <code>3.14</code>.');"
+      ],
+      "type": "waypoint",
+      "releasedOn": "Aug 12, 2017",
       "challengeType": 1,
       "translations": {}
     },
@@ -230,7 +264,7 @@
       "tests": [
         "// Test user did replace var keyword",
         "// Test myConcat is const",
-        "// Test myConcat is a function",
+        "assert(typeof myConcat === \"function\", 'message: <code>myConcat</code> should be a function');",
         "// Test myConcat() returns the correct array",
         "// Test function keyword was not used",
         "// Test arrow => was used"
@@ -798,16 +832,16 @@
         "In the <code>export</code> lesson, you learned about the syntax referred to as a <dfn>named export</dfn>. This allowed you to make multiple functions and variables available for use in other files.",
         "There is another <code>export</code> syntax you need to know, known as <dfn>export default</dfn>. Usually you will use this syntax if only one value is being exported from a file. It is also used to create a fallback value for a file or module.",
         "Here is a quick example of <code>export default</code>:",
-        "<blockquote>export default const add = (x,y) => {<br>  return x + y;<br>}</blockquote>",
-        "There is a one major feature of <code>export default</code> you must never forget - since it is used to declare a fallback value for a module or file, you can only have one value be a default export in each module or file.",
+        "<blockquote>export default function add(x,y) {<br>  return x + y;<br>}</blockquote>",
+        "Note: Since <code>export default</code> is used to declare a fallback value for a module or file, you can only have one value be a default export in each module or file. Additionally, you cannot use <code>export default</code> with <code>var</code>, <code>let</code>, or <code>const</code>",
         "<hr>",
         "The following function should be the fallback value for the module. Please add the necessary code to do so."
       ],
       "challengeSeed": [
-        "const subtract = (x,y) => {return x - y;}"
+        "function subtract(x,y) {return x - y;}"
       ],
       "tests": [
-        "assert(code.match(/export\\s+default\\s+const\\s+subtract\\s+=\\s+\\(x,y\\)\\s+=>\\s+{return\\s+x\\s-\\s+y;}/ig))"
+        "assert(code.match(/export\\s+default\\s+function\\s+subtract\\(x,y\\)\\s+{return\\s+x\\s-\\s+y;}/ig))"
       ],
       "type": "waypoint",
       "releasedOn": "Feb 17, 2017",

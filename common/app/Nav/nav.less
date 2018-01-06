@@ -77,31 +77,10 @@ li.nav-avatar {
 
     > a {
       margin: 0;
-      padding: 0 @navbar-padding-horizontal 0 @navbar-padding-horizontal;
+      padding: 7.5px @navbar-padding-horizontal 7.5px @navbar-padding-horizontal;
     }
   }
 }
-
-.nav-username {
-  padding-right: @navbar-padding-horizontal;
-}
-
-.nav-points {
-  @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
-    padding: @navbar-padding-vertical 0 @navbar-padding-vertical 0;
-  }
-  @media (min-width: @screen-md-min) {
-    padding: @navbar-padding-vertical @navbar-padding-horizontal @navbar-padding-vertical 0;
-  }
-}
-
-.nav-picture {
-  margin-top: @navbar-logo-padding;
-  margin-bottom: @navbar-logo-padding;
-  height: @navbar-logo-height;
-  width: @navbar-logo-height;
-}
-
 .navbar-nav a {
   color: @body-bg;
   margin-top: -5px;
@@ -119,6 +98,14 @@ li.nav-avatar {
 
 .navbar-collapse {
   border-top: 0;
+}
+
+.divider-vertical {
+  height: 24px;
+  margin-top: 6px;
+  margin-bottom: 6px;
+  border-left: 0.25px solid #ffffff;
+  border-right: 0.25px solid #ffffff;
 }
 
 @media (max-width: @screen-xs-max) {
@@ -166,6 +153,28 @@ li.nav-avatar {
 }
 
 .night {
+  .nav-component-wrapper {
+    ::-webkit-input-placeholder {
+      color: @night-text-color;
+    }
+
+    ::-moz-placeholder {
+      color: @night-text-color;
+    }
+
+    ::-ms-placeholder {
+      color: @night-text-color;
+    }
+
+    ::placeholder {
+      color: @night-text-color;
+    }
+
+    .fcc_input {
+      background-color: @night-search-color;
+      color: @night-text-color;
+    }
+  }
   .navbar-default {
     .navbar-nav {
       & > li > a {
@@ -209,4 +218,66 @@ li.nav-avatar {
     padding-left: 10px;
     padding-right: 10px;
   }
+}
+
+.nav-component-wrapper {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .fcc_searchBar {
+    width: auto;
+    flex-grow: 1
+  }
+
+  ::-webkit-input-placeholder {
+    color: @input-color-placeholder;
+  }
+
+  ::-moz-placeholder {
+    color: @input-color-placeholder;
+  }
+
+  ::-ms-placeholder {
+    color: @input-color-placeholder;
+  }
+
+  ::placeholder {
+    color: @input-color-placeholder;
+  }
+
+  .navbar-header {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+  }
+}
+
+.logo-glyph {
+  height: 30px;
+  width: auto;
+}
+
+.logo {
+  display: none !important;
+}
+
+
+@media (min-width: 992px) {
+  .logo-glyph {
+    display: none !important;
+  }
+
+  .logo {
+    display: block !important;
+  }
+
+}
+
+@media screen and (max-width: 768px) {
+  .nav-component-wrapper {
+    display: block
+  }
+
 }

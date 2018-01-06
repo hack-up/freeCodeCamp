@@ -1,17 +1,27 @@
+import _ from 'lodash';
 import { Observable } from 'rx';
-import { createTypes, createAsyncTypes } from 'redux-create-types';
-import { combineActions, createAction, handleActions } from 'redux-actions';
+import {
+  combineActions,
+  createAction,
+  createAsyncTypes,
+  createTypes,
+  handleActions
+} from 'berkeleys-redux-utils';
 import { createSelector } from 'reselect';
-import noop from 'lodash/noop';
-import identity from 'lodash/identity';
 
-import { entitiesSelector } from '../entities';
 import fetchUserEpic from './fetch-user-epic.js';
 import updateMyCurrentChallengeEpic from './update-my-challenge-epic.js';
 import fetchChallengesEpic from './fetch-challenges-epic.js';
 import navSizeEpic from './nav-size-epic.js';
 
+import { createFilesMetaCreator } from '../files';
+import { updateThemeMetacreator, entitiesSelector } from '../entities';
+import { types as challenges } from '../routes/Challenges/redux';
+import { challengeToFiles } from '../routes/Challenges/utils';
+
 import ns from '../ns.json';
+
+import { themes, invertTheme } from '../../utils/themes.js';
 
 export const epics = [
   fetchUserEpic,
@@ -21,18 +31,16 @@ export const epics = [
 ];
 
 export const types = createTypes([
+  'onRouteHome',
+
   'appMounted',
   'analytics',
   'updateTitle',
-  'updateAppLang',
 
   createAsyncTypes('fetchChallenge'),
   createAsyncTypes('fetchChallenges'),
-  'updateCurrentChallenge',
 
-  'fetchUser',
-  'addUser',
-  'updateThisUser',
+  createAsyncTypes('fetchUser'),
   'showSignIn',
 
   'handleError',
@@ -42,8 +50,7 @@ export const types = createTypes([
 
   // night mode
   'toggleNightMode',
-  'updateTheme',
-  'addThemeToBody'
+  'postThemeComplete'
 ], ns);
 
 const throwIfUndefined = () => {
@@ -80,6 +87,7 @@ export const createEventMetaCreator = ({
   }
 });
 
+export const onRouteHome = createAction(types.onRouteHome);
 export const appMounted = createAction(types.appMounted);
 export const fetchChallenge = createAction(
   '' + types.fetchChallenge,
@@ -88,16 +96,16 @@ export const fetchChallenge = createAction(
 export const fetchChallengeCompleted = createAction(
   types.fetchChallenge.complete,
   null,
-  identity
+  meta => ({
+    ...meta,
+    ..._.flow(challengeToFiles, createFilesMetaCreator)(meta.challenge)
+  })
 );
 export const fetchChallenges = createAction('' + types.fetchChallenges);
 export const fetchChallengesCompleted = createAction(
   types.fetchChallenges.complete,
   (entities, result) => ({ entities, result }),
   entities => ({ entities })
-);
-export const updateCurrentChallenge = createAction(
-  types.updateCurrentChallenge
 );
 
 // updateTitle(title: String) => Action
@@ -106,19 +114,13 @@ export const updateTitle = createAction(types.updateTitle);
 // fetchUser() => Action
 // used in combination with fetch-user-epic
 export const fetchUser = createAction(types.fetchUser);
-
-// addUser(
-//   entities: { [userId]: User }
-// ) => Action
-export const addUser = createAction(
-  types.addUser,
-  noop,
-  entities => ({ entities })
+export const fetchUserComplete = createAction(
+  types.fetchUser.complete,
+  ({ result }) => result,
+  _.identity
 );
-export const updateThisUser = createAction(types.updateThisUser);
-export const showSignIn = createAction(types.showSignIn);
 
-export const updateAppLang = createAction(types.updateAppLang);
+export const showSignIn = createAction(types.showSignIn);
 
 // used when server needs client to redirect
 export const delayedRedirect = createAction(types.delayedRedirect);
@@ -143,50 +145,58 @@ export const doActionOnError = actionCreator => error => Observable.of(
 
 export const toggleNightMode = createAction(
   types.toggleNightMode,
-  // we use this function to avoid hanging onto the eventObject
-  // so that react can recycle it
-  () => null
+  null,
+  (username, theme) => updateThemeMetacreator(username, invertTheme(theme))
 );
-// updateTheme(theme: /night|default/) => Action
-export const updateTheme = createAction(types.updateTheme);
-// addThemeToBody(theme: /night|default/) => Action
-export const addThemeToBody = createAction(types.addThemeToBody);
+export const postThemeComplete = createAction(
+  types.postThemeComplete,
+  null,
+  updateThemeMetacreator
+);
 
-const initialState = {
+const defaultState = {
   title: 'Learn To Code | freeCodeCamp',
   isSignInAttempted: false,
   user: '',
-  lang: '',
   csrfToken: '',
-  theme: 'default',
   // eventually this should be only in the user object
   currentChallenge: '',
   superBlocks: []
 };
 
 export const getNS = state => state[ns];
-export const langSelector = state => getNS(state).lang;
 export const csrfSelector = state => getNS(state).csrfToken;
-export const themeSelector = state => getNS(state).theme;
 export const titleSelector = state => getNS(state).title;
 
 export const currentChallengeSelector = state => getNS(state).currentChallenge;
 export const superBlocksSelector = state => getNS(state).superBlocks;
 export const signInLoadingSelector = state => !getNS(state).isSignInAttempted;
 
+export const usernameSelector = state => getNS(state).user || '';
 export const userSelector = createSelector(
   state => getNS(state).user,
   state => entitiesSelector(state).user,
   (username, userMap) => userMap[username] || {}
 );
 
-export const challengeSelector = createSelector(
-  currentChallengeSelector,
-  state => entitiesSelector(state).challenge,
-  (challengeName, challengeMap = {}) => {
-    return challengeMap[challengeName] || {};
-  }
+export const themeSelector = _.flow(
+  userSelector,
+  user => user.theme || themes.default
 );
+
+export const isSignedInSelector = state => !!userSelector(state).username;
+
+export const challengeSelector = state => {
+  const challengeName = currentChallengeSelector(state);
+  const challengeMap = entitiesSelector(state).challenge || {};
+  return challengeMap[challengeName] || {};
+};
+
+export const previousSolutionSelector = state => {
+  const { id } = challengeSelector(state);
+  const { challengeMap = {} } = userSelector(state);
+  return challengeMap[id];
+};
 
 export const firstChallengeSelector = createSelector(
   entitiesSelector,
@@ -222,58 +232,44 @@ export const firstChallengeSelector = createSelector(
   }
 );
 
-export default function createReducer() {
-  const reducer = handleActions(
-    {
-      [types.updateTitle]: (state, { payload = 'Learn To Code' }) => ({
-        ...state,
-        title: payload + ' | freeCodeCamp'
-      }),
+export default handleActions(
+  () => ({
+    [types.updateTitle]: (state, { payload = 'Learn To Code' }) => ({
+      ...state,
+      title: payload + ' | freeCodeCamp'
+    }),
 
-      [types.updateThisUser]: (state, { payload: user }) => ({
-        ...state,
-        user
-      }),
-      [types.fetchChallenge.complete]: (state, { payload }) => ({
-        ...state,
-        currentChallenge: payload.currentChallenge
-      }),
-      [combineActions(
-        types.fetchChallenge.complete,
-        types.fetchChallenges.complete
-      )]: (state, { payload }) => ({
-        ...state,
-        superBlocks: payload.result.superBlocks
-      }),
-      [types.updateCurrentChallenge]: (state, { payload = '' }) => ({
-        ...state,
-        currentChallenge: payload
-      }),
-      [types.updateAppLang]: (state, { payload = 'en' }) =>({
-        ...state,
-        lang: payload
-      }),
-      [types.updateTheme]: (state, { payload = 'default' }) => ({
-        ...state,
-        theme: payload
-      }),
-      [combineActions(types.showSignIn, types.updateThisUser)]: state => ({
-        ...state,
-        isSignInAttempted: true
-      }),
+    [types.fetchUser.complete]: (state, { payload: user }) => ({
+      ...state,
+      user
+    }),
+    [combineActions(
+      types.fetchChallenge.complete,
+      types.fetchChallenges.complete
+    )]: (state, { payload }) => ({
+      ...state,
+      superBlocks: payload.result.superBlocks
+    }),
+    [challenges.onRouteChallenges]: (state, { payload: { dashedName } }) => ({
+      ...state,
+      currentChallenge: dashedName
+    }),
+    [
+      combineActions(types.showSignIn, types.fetchUser.complete)
+    ]: state => ({
+      ...state,
+      isSignInAttempted: true
+    }),
 
-      [types.challengeSaved]: (state, { payload: { points = 0 } }) => ({
-        ...state,
-        points
-      }),
-      [types.delayedRedirect]: (state, { payload }) => ({
-        ...state,
-        delayedRedirect: payload
-      })
-    },
-    initialState
-  );
-
-  reducer.toString = () => ns;
-  return reducer;
-}
+    [types.challengeSaved]: (state, { payload: { points = 0 } }) => ({
+      ...state,
+      points
+    }),
+    [types.delayedRedirect]: (state, { payload }) => ({
+      ...state,
+      delayedRedirect: payload
+    })
+  }),
+  defaultState,
+  ns
+);

@@ -1,10 +1,12 @@
-import React, { PureComponent, PropTypes } from 'react';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 
 import {
   panesSelector,
   panesByNameSelector,
+  panesMounted,
   heightSelector,
   widthSelector
 } from './redux';
@@ -20,7 +22,7 @@ const mapStateToProps = createSelector(
     let lastDividerPosition = 0;
     return {
       panes: panes
-        .map(name => panesByName[name])
+        .map(({ name }) => panesByName[name])
         .filter(({ isHidden })=> !isHidden)
         .map((pane, index, { length: numOfPanes }) => {
           const dividerLeft = pane.dividerLeft || 0;
@@ -37,23 +39,25 @@ const mapStateToProps = createSelector(
   }
 );
 
-const mapDispatchToProps = null;
+const mapDispatchToProps = { panesMounted };
 
 const propTypes = {
   height: PropTypes.number.isRequired,
-  nameToComponent: PropTypes.object.isRequired,
-  panes: PropTypes.array
+  panes: PropTypes.array,
+  panesMounted: PropTypes.func.isRequired,
+  render: PropTypes.func.isRequired
 };
 
 export class Panes extends PureComponent {
+  componentDidMount() {
+    this.props.panesMounted();
+  }
   renderPanes() {
     const {
-      nameToComponent,
+      render,
       panes
     } = this.props;
     return panes.map(({ name, left, right, dividerLeft }) => {
-      const { Component } = nameToComponent[name] || {};
-      const FinalComponent = Component ? Component : 'span';
       const divider = dividerLeft ?
         (
           <Divider
@@ -70,7 +74,7 @@ export class Panes extends PureComponent {
           left={ left }
           right={ right }
           >
-          <FinalComponent />
+          { render(name) }
         </Pane>,
         divider
       ];

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 const mapStateToProps = null;
@@ -21,7 +22,9 @@ export function Pane({
     overflowY: 'auto',
     position: 'absolute',
     right: right + '%',
-    top: 0
+    top: 0,
+    paddingLeft: '4px',
+    paddingRight: '4px'
   };
   return (
     <div style={ style }>

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { dividerClicked } from './redux';
@@ -24,7 +25,7 @@ export function Divider({ left, dividerClicked }) {
     cursor: 'col-resize',
     height: '100%',
     left: left + '%',
-    marginLeft: '-4px',
+    marginLeft: '0px',
     position: 'absolute',
     right: 'auto',
     top: 0,

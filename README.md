@@ -66,8 +66,8 @@ We welcome pull requests from freeCodeCamp campers (our students) and seasoned J
 License
 -------
 
-Copyright (c) 2017 freeCodeCamp.
+Copyright (c) 2018 freeCodeCamp.
 
 The content of this repository bound by the following LICENSE(S)
 - The computer software is licensed under the [BSD-3-Clause](./LICENSE.md).
-- The curricular content as in the `./seed/challenges` or subdirectories and our wiki are licensed under the [CC-BY-SA-4.0](./LICENSE-freeCodeCamp-Curriculum.md)
+- The curricular content in the [`/seed`](/seed) and subdirectories are licensed under the [CC-BY-SA-4.0](./seed/LICENSE.md)

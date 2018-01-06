@@ -1,10 +1,11 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import capitalize from 'lodash/capitalize';
 import { createSelector } from 'reselect';
+import FCCSearchBar from 'react-freecodecamp-search';
 
-import { LinkContainer } from 'react-router-bootstrap';
 import {
   MenuItem,
   Nav,
@@ -14,6 +15,7 @@ import {
   NavbarBrand
 } from 'react-bootstrap';
 
+import { Link } from '../Router';
 import navLinks from './links.json';
 import SignUp from './Sign-Up.jsx';
 import BinButton from './Bin-Button.jsx';
@@ -26,41 +28,36 @@ import {
 
   dropdownSelector
 } from './redux';
-import {
-  userSelector,
-  signInLoadingSelector
-} from '../redux';
-import { nameToTypeSelector, panesSelector } from '../Panes/redux';
+import { isSignedInSelector, signInLoadingSelector } from '../redux';
+import { panesSelector } from '../Panes/redux';
 
 
 const fCClogo = 'https://s3.amazonaws.com/freecodecamp/freecodecamp_logo.svg';
+// TODO @freecodecamp-team: place this glyph in S3 like above, PR in /assets
+const fCCglyph = 'https://raw.githubusercontent.com/freeCodeCamp/assets/' +
+  '3b9cafc312802199ebba8b31fb1ed9b466a3efbb/assets/logos/FFCFire.png';
 
 const mapStateToProps = createSelector(
-  userSelector,
+  isSignedInSelector,
   dropdownSelector,
   signInLoadingSelector,
   panesSelector,
-  nameToTypeSelector,
   (
-    { username, picture, points },
+    isSignedIn,
     isDropdownOpen,
     showLoading,
     panes,
-    nameToType
   ) => {
     return {
-      panes: panes.map(name => {
+      panes: panes.map(({ name, type }) => {
         return {
           content: name,
-          action: nameToType[name]
+          action: type
         };
       }, {}),
       isDropdownOpen,
-      isSignedIn: !!username,
-      picture,
-      points,
-      showLoading,
-      username
+      isSignedIn,
+      showLoading
     };
   }
 );
@@ -104,25 +101,17 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   };
 }
 
-const propTypes = navLinks.reduce(
-  (pt, { content }) => {
-    const handler = `handle${capitalize(content)}Click`;
-    pt[handler] = PropTypes.func.isRequired;
-    return pt;
-  },
-  {
-    panes: PropTypes.array,
-    clickOnLogo: PropTypes.func.isRequired,
-    closeDropdown: PropTypes.func.isRequired,
-    isDropdownOpen: PropTypes.bool,
-    openDropdown: PropTypes.func.isRequired,
-    picture: PropTypes.string,
-    points: PropTypes.number,
-    showLoading: PropTypes.bool,
-    signedIn: PropTypes.bool,
-    username: PropTypes.string
-  }
-);
+const propTypes = {
+  clickOnLogo: PropTypes.func.isRequired,
+  clickOnMap: PropTypes.func.isRequired,
+  closeDropdown: PropTypes.func.isRequired,
+  isDropdownOpen: PropTypes.bool,
+  isSignedIn: PropTypes.bool,
+  openDropdown: PropTypes.func.isRequired,
+  panes: PropTypes.array,
+  showLoading: PropTypes.bool,
+  signedIn: PropTypes.bool
+};
 
 export class FCCNav extends React.Component {
   renderLink(isNavItem, { isReact, isDropdown, content, link, links, target }) {
@@ -154,7 +143,7 @@ export class FCCNav extends React.Component {
     }
     if (isReact) {
       return (
-        <LinkContainer
+        <Link
           key={ content }
           onClick={ this.props[`handle${content}Click`] }
           to={ link }
@@ -164,7 +153,7 @@ export class FCCNav extends React.Component {
             >
             { content }
           </Component>
-        </LinkContainer>
+        </Link>
       );
     }
     return (
@@ -182,21 +171,20 @@ export class FCCNav extends React.Component {
   render() {
     const {
       panes,
+      isSignedIn,
       clickOnLogo,
       clickOnMap,
-      username,
-      points,
-      picture,
       showLoading
     } = this.props;
 
     const shouldShowMapButton = panes.length === 0;
     return (
       <Navbar
-        className='nav-height'
-        id='navbar'
-        staticTop={ true }
-        >
+      className='nav-height'
+      id='navbar'
+      staticTop={ true }
+      >
+      <div className='nav-component-wrapper'>
         <Navbar.Header>
           <Navbar.Toggle children={ 'Menu' } />
           <NavbarBrand>
@@ -206,11 +194,20 @@ export class FCCNav extends React.Component {
               >
               <img
                 alt='learn to code javascript at freeCodeCamp logo'
-                className='img-responsive nav-logo'
+                className='img-responsive nav-logo logo'
                 src={ fCClogo }
+              />
+              <img
+                alt='learn to code javascript at freeCodeCamp logo'
+                className='img-responsive nav-logo logo-glyph'
+                src={ fCCglyph }
               />
             </a>
           </NavbarBrand>
+          <FCCSearchBar
+            dropdown={ true }
+            placeholder='&#xf002; What would you like to know?'
+          />
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav
@@ -240,14 +237,13 @@ export class FCCNav extends React.Component {
               )
             }
             <SignUp
-              picture={ picture }
-              points={ points }
               showLoading={ showLoading }
-              username={ username }
+              showSignUp={ !isSignedIn }
             />
           </Nav>
         </Navbar.Collapse>
-      </Navbar>
+      </div>
+    </Navbar>
     );
   }
 }

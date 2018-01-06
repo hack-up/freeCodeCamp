@@ -1,7 +1,7 @@
-import React, { PropTypes } from 'react';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import PureComponent from 'react-pure-render/component';
 import FA from 'react-fontawesome';
 import { Panel } from 'react-bootstrap';
 
